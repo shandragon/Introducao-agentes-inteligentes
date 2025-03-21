@@ -8,8 +8,23 @@ class Food(Thing):
 class Water(Thing):
     pass
 
+class Smell(Thing):
+    pass
+
 class Park(GraphicEnvironment):
   count_step = 0
+
+  def add_dog(self, agent, location):
+    self.add_thing(agent, location)
+
+  def add_food(self, location):
+    self.add_thing(Food(), location)
+    # Adicionando os cheiros da comida
+    for x, y in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+      self.add_thing(Smell(), [location[0] + x, location[1] + y])
+
+  def add_water(self, location):
+    self.add_thing(Water(), location)
 
   def percept(self, agent):
     '''return a list of things that are in our agent's location'''
@@ -51,6 +66,11 @@ class Park(GraphicEnvironment):
           print('{} comendo {} na localização: {}'
             .format(str(agent)[1:-1], str(items[0])[1:-1], agent.location))
           self.delete_thing(items[0])
+          # Removendo os cheiros da comida
+          location_food = agent.location
+          for x, y in [(1, 0), (-1, 0), (0, 1), (0, -1)]:
+            smell = self.list_things_at([location_food[0] + x, location_food[1] + y], tclass=Smell)
+            self.delete_thing(smell[0])
     elif action == "drink":
       items = self.list_things_at(agent.location, tclass=Water)
       if len(items) != 0:
